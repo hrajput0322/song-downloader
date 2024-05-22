@@ -23,7 +23,7 @@ downloadSongs(DEFAULT_API_KEY, songNames)
   .catch((err) => console.error('Error:', err));
 ```
 
-## Useage (without API key)
+## Usage (without API key)
 
 ```bash
 import { downloadSongs } from 'song-downloader';
