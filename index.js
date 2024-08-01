@@ -81,7 +81,7 @@ async function downloadMultipleAudios(urlsAndNames, downloadPath) {
       continue;
     }
     console.log(url);
-    const sanitizedSongName = songName.replace(/[<>:"\/\\|?*\x00-\x1F]/g, '_'); // Replace invalid filename characters
+    const sanitizedSongName = songName.replace(/[<>:"\/\\|?*\x00-\x1F]/g, '_');
     const outputFilePath = path.join(downloadPath, `${sanitizedSongName}.mp3`);
     try {
       await downloadAudio(url, outputFilePath);
@@ -97,7 +97,6 @@ async function downloadYouTubeAudios(youtubeLinks) {
   }
 
   try {
-    // Specify the download path to be C:\downloads
     const downloadPath = path.join('C:\\', 'downloads');
     if (!fs.existsSync(downloadPath)) {
       fs.mkdirSync(downloadPath);
