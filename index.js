@@ -10,7 +10,6 @@ ffmpeg.setFfmpegPath(ffmpegPath);
 
 const DEFAULT_API_KEY = 'AIzaSyApHXT27iuzXIkutARnt75KfUE3sGEJnoE';
 
-// Resolve __dirname equivalent in ESM
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
