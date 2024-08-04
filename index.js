@@ -4,6 +4,7 @@ import ffmpegPath from 'ffmpeg-static';
 import axios from 'axios';
 import fs from 'fs';
 import path from 'path';
+require("dotenv").config;
 import { fileURLToPath } from 'url';
 
 ffmpeg.setFfmpegPath(ffmpegPath);
