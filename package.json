@@ -1,6 +1,6 @@
 {
   "name": "song-downloader",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "an npm package to download songs",
   "main": "index.js",
   "type": "module",
