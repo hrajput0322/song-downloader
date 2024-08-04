@@ -8,7 +8,7 @@ import { fileURLToPath } from 'url';
 
 ffmpeg.setFfmpegPath(ffmpegPath);
 
-const DEFAULT_API_KEY = 'AIzaSyApHXT27iuzXIkutARnt75KfUE3sGEJnoE';
+const DEFAULT_API_KEY = process.env.YOUTUBE_API_KEY;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
