@@ -4,12 +4,11 @@ import ffmpegPath from 'ffmpeg-static';
 import axios from 'axios';
 import fs from 'fs';
 import path from 'path';
-require("dotenv").config;
 import { fileURLToPath } from 'url';
 
 ffmpeg.setFfmpegPath(ffmpegPath);
 
-const DEFAULT_API_KEY = process.env.YOUTUBE_API_KEY;
+const DEFAULT_API_KEY = 'AIzaSyDGv78JLNU2rPl-5oFuw4HwpDtF6jW5GMQ';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
