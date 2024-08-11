@@ -1,4 +1,4 @@
-import ytdl from 'ytdl-core';
+import youtubedl from 'youtube-dl-exec';
 import ffmpeg from 'fluent-ffmpeg';
 import ffmpegPath from 'ffmpeg-static';
 import axios from 'axios';
@@ -13,7 +13,7 @@ const DEFAULT_API_KEY = 'AIzaSyDGv78JLNU2rPl-5oFuw4HwpDtF6jW5GMQ';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-async function DownloadSongs(api_key = DEFAULT_API_KEY, songNames) {
+async function fetchYouTubeLinks(api_key = DEFAULT_API_KEY, songNames) {
   try {
     const youtubeLinks = await Promise.all(
       songNames.map(async (songName) => {
@@ -40,37 +40,25 @@ async function DownloadSongs(api_key = DEFAULT_API_KEY, songNames) {
     return youtubeLinks;
   } catch (error) {
     console.error("Error fetching YouTube links:", error);
-    return Error("Internal server error");
+    throw new Error("Internal server error");
   }
 }
 
 async function downloadAudio(url, outputFilePath) {
   return new Promise((resolve, reject) => {
-    ytdl.getInfo(url)
-      .then(info => {
-        const audioFormat = ytdl.filterFormats(info.formats, 'audioonly')[0];
-        if (!audioFormat) {
-          return reject(new Error('No audio format found for this video.'));
-        }
-
-        const stream = ytdl.downloadFromInfo(info, { format: audioFormat });
-
-        ffmpeg(stream)
-          .audioBitrate(audioFormat.audioBitrate)
-          .save(outputFilePath)
-          .on('progress', (progress) => {
-            console.log(`Downloading ${path.basename(outputFilePath)}: ${progress.targetSize}kb downloaded`);
-          })
-          .on('end', () => {
-            console.log(`${path.basename(outputFilePath)} download finished.`);
-            resolve();
-          })
-          .on('error', (err) => {
-            console.error(`Error downloading ${path.basename(outputFilePath)}: ${err.message}`);
-            reject(err);
-          });
+    youtubedl(url, {
+      extractAudio: true,
+      audioFormat: 'mp3',
+      output: outputFilePath,
+    })
+      .then(() => {
+        console.log(`${path.basename(outputFilePath)} download finished.`);
+        resolve();
       })
-      .catch(err => reject(err));
+      .catch(err => {
+        console.error(`Error downloading ${path.basename(outputFilePath)}: ${err.message}`);
+        reject(err);
+      });
   });
 }
 
@@ -91,12 +79,9 @@ async function downloadMultipleAudios(urlsAndNames, downloadPath) {
   }
 }
 
-async function downloadYouTubeAudios(youtubeLinks) {
-  if (!youtubeLinks || !Array.isArray(youtubeLinks)) {
-    return Error("Invalid input. Please provide an array of YouTube URLs.");
-  }
-
+async function downloadYouTubeAudios(api_key, songNames) {
   try {
+    const youtubeLinks = await fetchYouTubeLinks(api_key, songNames);
     const downloadPath = path.join('C:\\', 'downloads');
     if (!fs.existsSync(downloadPath)) {
       fs.mkdirSync(downloadPath);
@@ -105,22 +90,16 @@ async function downloadYouTubeAudios(youtubeLinks) {
     await downloadMultipleAudios(youtubeLinks, downloadPath);
     return { message: "Download completed successfully." };
   } catch (error) {
-    return { error: `Failed to download audios: ${error.message}` };
+    console.error("Error during download process:", error);
+    throw new Error("Failed to download audios");
   }
 }
 
-export async function downloadSongs(DEFAULT_API_KEY, songNames) {
-  DownloadSongs(DEFAULT_API_KEY, songNames)
-    .then(async links => {
-      console.log('YouTube Links:', links);
-      const downloadResult = await downloadYouTubeAudios(links);
-      if (downloadResult.error) {
-        console.error(downloadResult.error);
-      } else {
-        console.log(downloadResult.message);
-      }
-    })
-    .catch(error => {
-      console.error('Error:', error.message);
-    });
+export async function downloadSongs(api_key = DEFAULT_API_KEY, songNames) {
+  try {
+    const result = await downloadYouTubeAudios(api_key, songNames);
+    console.log(result.message);
+  } catch (error) {
+    console.error('Error:', error.message);
+  }
 }
